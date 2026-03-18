@@ -1,0 +1,65 @@
+<Window x:Class="CategoryManagement.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CategoryManagement" 
+        xmlns:views="clr-namespace:CategoryManagement.Views"
+        xmlns:viewmodels="clr-namespace:CategoryManagement.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:CategoryListViewModel}"
+        mc:Ignorable="d"
+        Title="MainWindow" 
+        WindowState="Maximized">
+    <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+    </Window.Resources>
+    <Grid>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Button x:Name="button" Grid.Row="0" Command="{Binding AddCommand}" Content="Add Category" HorizontalAlignment="Left" Margin="10" Padding="15,5"/>
+            <DataGrid x:Name="dataGrid" Grid.Row="1" ItemsSource="{Binding Categories}" AutoGenerateColumns="False" IsReadOnly="True" Margin="10,0,10,10">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
+                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
+                    <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
+                    <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt}" Width="140"/>
+                    <DataGridTemplateColumn Header="Edit" Width="70">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="70" Command="{Binding DataContext.EditCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">Edit</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                    <DataGridTemplateColumn Header="Delete" Width="70">
+                        <DataGridTemplateColumn.CellTemplate>
+                            <DataTemplate>
+                                <Button Width="70" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=DataGrid}}" CommandParameter="{Binding Id}">Delete</Button>
+                            </DataTemplate>
+                        </DataGridTemplateColumn.CellTemplate>
+                    </DataGridTemplateColumn>
+                </DataGrid.Columns>
+            </DataGrid>
+        </Grid>
+
+        <Grid Visibility="{Binding IsFormVisible, Converter={StaticResource BoolToVis}}">
+            
+            <Border Background="#88000000"/>
+            
+            <Border Background="White"
+                CornerRadius="8"
+                Padding="10"
+                Width="460" Height="340"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.4"/>
+                </Border.Effect>
+                
+                <views:CategoryFormView DataContext="{Binding FormViewModel}"/>
+            </Border>
+        </Grid>
+    </Grid>
+</Window>

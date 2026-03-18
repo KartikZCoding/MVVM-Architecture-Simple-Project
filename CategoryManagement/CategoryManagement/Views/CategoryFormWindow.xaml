@@ -1,0 +1,35 @@
+<Window x:Class="CategoryManagement.Views.CategoryFormWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CategoryManagement.Views"
+        xmlns:viewmodels="clr-namespace:CategoryManagement.ViewModels" 
+        d:DataContext="{d:DesignInstance Type=viewmodels:CategoryFormViewModel}"
+        mc:Ignorable="d"
+        Title="CategoryFormWindow" Height="374" Width="464">
+
+    <Grid Margin="20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Name" VerticalAlignment="Center" Margin="0,0,10,10"/>
+        <TextBox x:Name="textBoxName" Grid.Row="0" Grid.Column="1" Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Margin="0,0,0,10" Padding="4"/>
+
+        <Label Grid.Row="1" Grid.Column="0" Content="Description" VerticalAlignment="Top" Margin="0,0,10,10"/>
+        <TextBox x:Name="textBoxDesc" Grid.Row="1" Grid.Column="1" Text="{Binding Description, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Height="60" TextWrapping="Wrap" AcceptsReturn="True" Margin="0,0,0,10" Padding="4"/>
+
+        <StackPanel Grid.Row="3" Grid.Column="0" Grid.ColumnSpan="2" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,10,0,0">
+            <Button x:Name="button" Command="{Binding SaveCommand}" Content="Save" Height="32" Width="80" Margin="0,0,10,0"/>
+            <Button x:Name="button_Copy" Command="{Binding CancelCommand}" Content="Cancel" Height="32" Width="80"/>
+        </StackPanel>
+    </Grid>
+</Window>
