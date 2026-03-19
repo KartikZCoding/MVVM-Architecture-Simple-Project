@@ -1,7 +1,12 @@
 using AutoMapper;
+using CategoryManagement.Data;
 using CategoryManagement.Mapping;
 using CategoryManagement.Repository;
 using CategoryManagement.ViewModels;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using System.Windows;
@@ -13,22 +18,49 @@ namespace CategoryManagement
     /// </summary>
     public partial class App : Application
     {
-        protected override void OnStartup(StartupEventArgs e)
+        public static IHost AppHost { get; private set; }
+
+        public App()
         {
-            base.OnStartup(e);
+            AppHost = Host.CreateDefaultBuilder()
+                .ConfigureServices((context, services) =>
+                {
+                    var connectionString = context.Configuration
+                        .GetConnectionString("DefaultConnection");
+                    Console.WriteLine(connectionString);
 
-            var configExpression = new MapperConfigurationExpression();
-            configExpression.AddProfile<CategoryProfile>();
-            var mapperConfig = new MapperConfiguration(configExpression, NullLoggerFactory.Instance);
-            IMapper mapper = mapperConfig.CreateMapper();
+                    services.AddDbContext<AppDbContext>(options =>
+                        options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString))
+                    );
 
-            var repo = new CategoryRepository(mapper);
+                    services.AddAutoMapper(cfg => { }, typeof(CategoryProfile));
 
-            var viewModel = new CategoryListViewModel(repo);
+                    services.AddScoped<CategoryRepository>();
+                    services.AddScoped<CategoryListViewModel>();
 
-            var mainWindow = new MainWindow();
-            mainWindow.DataContext = viewModel;
+                    services.AddSingleton<MainWindow>();
+                })
+                .Build();
+        }
+
+        protected override async void OnStartup(StartupEventArgs e)
+        {
+            await AppHost.StartAsync();
+
+            var mainWindow = AppHost.Services.GetRequiredService<MainWindow>();
+            mainWindow.DataContext = AppHost.Services.GetRequiredService<CategoryListViewModel>();
+
             mainWindow.Show();
+
+            base.OnStartup(e);
+        }
+
+        protected override async void OnExit(ExitEventArgs e)
+        {
+            await AppHost.StopAsync();
+            AppHost.Dispose();
+
+            base.OnExit(e);
         }
     }
 }

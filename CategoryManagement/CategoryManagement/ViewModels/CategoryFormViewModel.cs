@@ -74,7 +74,7 @@ namespace CategoryManagement.ViewModels
             return !string.IsNullOrWhiteSpace(Name);
         }
 
-        private void Save()
+        private async void Save()
         {
             if (_isEditMode)
             {
@@ -85,7 +85,7 @@ namespace CategoryManagement.ViewModels
                     Description = (this.Description ?? string.Empty).Trim(),
                 };
 
-                _repo.Update(updated);
+                await _repo.Update(updated);
             }
             else
             {
@@ -94,7 +94,7 @@ namespace CategoryManagement.ViewModels
                     Name = (this.Name ?? string.Empty).Trim(),
                     Description = (this.Description ?? string.Empty).Trim(),
                 };
-                _repo.Insert(newCategory);
+                await _repo.Insert(newCategory);
             }
             _closePopup();
         }

@@ -71,9 +71,9 @@ namespace CategoryManagement.ViewModels
             LoadCategories();
         }
 
-        private void LoadCategories()
+        private async Task LoadCategories()
         {
-            var data = _repo.GetAllActive();
+            var data = await _repo.GetAllActive();
 
             Categories.Clear();
             foreach (var item in data)
@@ -95,14 +95,14 @@ namespace CategoryManagement.ViewModels
             IsFormVisible = true;
         }
 
-        private void OpenEditForm(int id)
+        private async void OpenEditForm(int id)
         {
-            var category = _repo.GetById(id);
+            var category = await _repo.GetById(id);
             if (category == null)
             {
                 MessageBox.Show("Category not found.",
                         "Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
-                LoadCategories();
+                await LoadCategories();
                 return;
             }
             FormViewModel = new CategoryFormViewModel(
@@ -116,7 +116,7 @@ namespace CategoryManagement.ViewModels
             IsFormVisible = true;
         }
 
-        private void DeleteCategory(int id)
+        private async void DeleteCategory(int id)
         {
             var category = Categories.FirstOrDefault(c => c.Id == id);
             if (category == null) return;
@@ -127,8 +127,8 @@ namespace CategoryManagement.ViewModels
 
             if (result == MessageBoxResult.No) return;
 
-            _repo.SoftDelete(id);
-            LoadCategories();
+            await _repo.SoftDelete(id);
+            await LoadCategories();
         }
     }
 }
