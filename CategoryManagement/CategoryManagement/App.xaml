@@ -1,8 +1,8 @@
-﻿<Application x:Class="CategoryManagement.App"
+<Application x:Class="CategoryManagement.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:CategoryManagement"
-             StartupUri="Views/MainWindow.xaml">
+             >
     <Application.Resources>
          
     </Application.Resources>
