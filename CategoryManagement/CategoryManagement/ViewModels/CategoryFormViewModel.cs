@@ -2,26 +2,21 @@ using CategoryManagement.Helpers;
 using CategoryManagement.Models;
 using CategoryManagement.Repository;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Text;
 using System.Windows.Input;
 
 namespace CategoryManagement.ViewModels
 {
     public class CategoryFormViewModel : INotifyPropertyChanged
     {
+        /*handle a property changed in VIEW*/
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        private readonly CategoryRepository _repo = new();
-        private readonly bool _isEditMode;
-        private int _editingId;
-        private readonly Action _closePopup;
-
+        /*for adding and editing a name in list*/
         private string _name = string.Empty;
         public string Name
         {
@@ -33,6 +28,7 @@ namespace CategoryManagement.ViewModels
             }
         }
 
+        /*for adding and editing a description in list*/
         private string _description = string.Empty;
         public string Description
         {
@@ -46,9 +42,16 @@ namespace CategoryManagement.ViewModels
 
         public ICommand SaveCommand { get; }
         public ICommand CancelCommand { get; }
-        public CategoryFormViewModel(Category? category, Action closePopup)
+
+        private readonly CategoryRepository _repo;
+        private readonly Action _closePopup;
+        private readonly bool _isEditMode;
+        private int _editingId;
+
+        public CategoryFormViewModel(CategoryRepository repo, Category? category, Action closePopup)
         {
-           _closePopup = closePopup;
+            _repo = repo;
+            _closePopup = closePopup;
 
             if (category == null)
             {

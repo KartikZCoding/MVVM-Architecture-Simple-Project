@@ -1,11 +1,9 @@
+using CategoryManagement.DTOs;
 using CategoryManagement.Helpers;
 using CategoryManagement.Models;
 using CategoryManagement.Repository;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.Text;
 using System.Windows;
 using System.Windows.Input;
 
@@ -13,16 +11,16 @@ namespace CategoryManagement.ViewModels
 {
     public class CategoryListViewModel : INotifyPropertyChanged
     {
+        /*handle a property changed in VIEW*/
         public event PropertyChangedEventHandler? PropertyChanged;
         protected void OnPropertyChanged(string name)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
         }
 
-        private readonly CategoryRepository _repo = new();
-
-        private ObservableCollection<Category> _categories = new();
-        public ObservableCollection<Category> Categories
+        /*manage a categories of list and observe to change in list of not*/
+        private ObservableCollection<CategoryDto> _categories = new();
+        public ObservableCollection<CategoryDto> Categories
         {
             get { return _categories; }
             set
@@ -32,6 +30,7 @@ namespace CategoryManagement.ViewModels
             }
         }
 
+        /*manage a popup form visible*/
         private bool _isFormVisible;
         public bool IsFormVisible
         {
@@ -43,6 +42,7 @@ namespace CategoryManagement.ViewModels
             }
         }
 
+        /*for adding and editing a category manage*/
         private CategoryFormViewModel? _formViewModel;
         public CategoryFormViewModel? FormViewModel
         {
@@ -58,13 +58,62 @@ namespace CategoryManagement.ViewModels
         public ICommand EditCommand { get; }
         public ICommand DeleteCommand { get; }
 
-        public CategoryListViewModel()
+        private readonly CategoryRepository _repo;
+
+        public CategoryListViewModel(CategoryRepository categoryRepository)
         {
+            _repo = categoryRepository;
+
             AddCommand = new RelayCommand(OpenAddForm);
             EditCommand = new RelayCommand<int>(OpenEditForm);
             DeleteCommand = new RelayCommand<int>(DeleteCategory);
 
             LoadCategories();
+        }
+
+        private void LoadCategories()
+        {
+            var data = _repo.GetAllActive();
+
+            Categories.Clear();
+            foreach (var item in data)
+            {
+                Categories.Add(item);
+            }
+        }
+
+        private void OpenAddForm()
+        {
+            FormViewModel = new CategoryFormViewModel(
+                            repo: _repo,
+                            category: null,
+                            closePopup: () =>
+                            {
+                                IsFormVisible = false;
+                                LoadCategories();
+                            });
+            IsFormVisible = true;
+        }
+
+        private void OpenEditForm(int id)
+        {
+            var category = _repo.GetById(id);
+            if (category == null)
+            {
+                MessageBox.Show("Category not found.",
+                        "Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
+                LoadCategories();
+                return;
+            }
+            FormViewModel = new CategoryFormViewModel(
+                repo: _repo,
+                category: category,
+                closePopup: () =>
+                {
+                    IsFormVisible = false;
+                    LoadCategories();
+                });
+            IsFormVisible = true;
         }
 
         private void DeleteCategory(int id)
@@ -80,49 +129,6 @@ namespace CategoryManagement.ViewModels
 
             _repo.SoftDelete(id);
             LoadCategories();
-        }
-
-        private void OpenEditForm(int id)
-        {
-            var category = _repo.GetById(id);
-            if (category == null)
-            {
-                MessageBox.Show("Category not found.",
-                        "Not Found", MessageBoxButton.OK, MessageBoxImage.Warning);
-                LoadCategories();
-                return;
-            }
-            FormViewModel = new CategoryFormViewModel(
-                category: category,
-                closePopup: () =>
-                {
-                    IsFormVisible = false;
-                    LoadCategories();
-                });
-            IsFormVisible = true;
-        }
-
-        private void OpenAddForm()
-        {
-            FormViewModel = new CategoryFormViewModel(
-                            category: null,
-                            closePopup: () =>
-                            {
-                                IsFormVisible = false;
-                                LoadCategories();
-                            });
-            IsFormVisible = true;
-        }
-
-        private void LoadCategories()
-        {
-            var data = _repo.GetAllActive();
-
-            Categories.Clear();
-            foreach (var item in data)
-            {
-                Categories.Add(item);
-            }
         }
     }
 }
