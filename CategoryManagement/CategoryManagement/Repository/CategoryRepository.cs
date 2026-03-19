@@ -1,3 +1,5 @@
+using AutoMapper;
+using CategoryManagement.DTOs;
 using CategoryManagement.Helpers;
 using CategoryManagement.Models;
 using MySql.Data.MySqlClient;
@@ -10,7 +12,14 @@ namespace CategoryManagement.Repository
 {
     public class CategoryRepository
     {
-        public List<Category> GetAllActive()
+        private readonly IMapper _mapper;
+
+        public CategoryRepository(IMapper mapper)
+        {
+            _mapper = mapper;
+        }
+
+        public List<CategoryDto> GetAllActive()
         {
             var list = new List<Category>();
 
@@ -32,7 +41,7 @@ namespace CategoryManagement.Repository
                     IsActive = reader.GetBoolean("IsActive")
                 });
             }
-            return list;
+            return _mapper.Map<List<CategoryDto>>(list);
         }
 
         public Category? GetById(int id)
