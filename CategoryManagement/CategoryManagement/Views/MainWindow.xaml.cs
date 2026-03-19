@@ -1,4 +1,3 @@
-using CategoryManagement.ViewModels;
 using System.Windows;
 
 namespace CategoryManagement
@@ -11,8 +10,6 @@ namespace CategoryManagement
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new CategoryListViewModel();
         }
-
     }
 }

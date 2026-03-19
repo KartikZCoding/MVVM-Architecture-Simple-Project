@@ -6,12 +6,19 @@
         xmlns:local="clr-namespace:CategoryManagement" 
         xmlns:views="clr-namespace:CategoryManagement.Views"
         xmlns:viewmodels="clr-namespace:CategoryManagement.ViewModels" 
+        xmlns:helpers="clr-namespace:CategoryManagement.Helpers"
         d:DataContext="{d:DesignInstance Type=viewmodels:CategoryListViewModel}"
         mc:Ignorable="d"
         Title="MainWindow" 
-        WindowState="Maximized">
+        WindowState="Maximized"
+        UseLayoutRounding="True"
+        SnapsToDevicePixels="True"
+        TextOptions.TextFormattingMode="Display"
+        TextOptions.TextRenderingMode="ClearType"
+        FontFamily="Inter">
     <Window.Resources>
         <BooleanToVisibilityConverter x:Key="BoolToVis"/>
+        <helpers:FullDateToShortDateConverter x:Key="ShortDateConverter"/>
     </Window.Resources>
     <Grid>
         <Grid>
@@ -25,7 +32,7 @@
                     <DataGridTextColumn Header="ID" Binding="{Binding Id}" Width="50"/>
                     <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="150"/>
                     <DataGridTextColumn Header="Description" Binding="{Binding Description}" Width="*"/>
-                    <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt}" Width="140"/>
+                    <DataGridTextColumn Header="CreatedAt" Binding="{Binding CreatedAt, Converter={StaticResource ShortDateConverter}}" Width="140"/>
                     <DataGridTemplateColumn Header="Edit" Width="70">
                         <DataGridTemplateColumn.CellTemplate>
                             <DataTemplate>
@@ -44,18 +51,20 @@
             </DataGrid>
         </Grid>
 
-        <Grid Visibility="{Binding IsFormVisible, Converter={StaticResource BoolToVis}}">
-            
-            <Border Background="#88000000"/>
-            
+        <Grid Visibility="{Binding IsFormVisible, Converter={StaticResource BoolToVis}}"
+              SnapsToDevicePixels="True"
+              UseLayoutRounding="True">
+
+            <Border Background="#33000000"/>
+
             <Border Background="White"
-                CornerRadius="8"
-                Padding="10"
-                Width="460" Height="340"
+                CornerRadius="10"
+                Padding="15"
+                Width="520" Height="380"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center">
                 <Border.Effect>
-                    <DropShadowEffect BlurRadius="20" ShadowDepth="4" Opacity="0.4"/>
+                    <DropShadowEffect BlurRadius="25" ShadowDepth="5" Opacity="0.3"/>
                 </Border.Effect>
                 
                 <views:CategoryFormView DataContext="{Binding FormViewModel}"/>
